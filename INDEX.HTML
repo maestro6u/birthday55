@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 55th Birthday Dad ✨</title>
+
+    <link rel="stylesheet" href="STYLE.CSS">
+</head>
+
+<body class="light">
+
+    <!-- THEME BUTTON -->
+    <button id="themeToggle" class="theme-btn">🌙</button>
+
+    <!-- GOLD BADGE -->
+    <div class="badge-container">
+        <div class="badge">
+            <span>55</span>
+        </div>
+    </div>
+
+    <h1 class="title">Happy 55th Birthday Dad!</h1>
+    <p class="subtitle">Civil Engineer • Project Manager • Our Inspiration</p>
+
+    <!-- CUSTOM CARD -->
+    <section class="card-section">
+        <h2>Create a Custom Birthday Card 💛</h2>
+
+        <textarea id="cardText" placeholder="Write something special..."></textarea>
+
+        <button id="generateCard">Generate</button>
+
+        <div id="customCard" class="custom-card"></div>
+    </section>
+
+    <!-- FAMILY MESSAGES -->
+    <section class="messages-section">
+        <h2>Family Messages ❤</h2>
+
+        <textarea id="familyMsg" placeholder="Write a message..."></textarea>
+
+        <button id="saveMsg">Save Message</button>
+
+        <div id="messagesList"></div>
+    </section>
+
+    <!-- ENCOURAGEMENT -->
+    <section class="encouragement-section">
+        <h2>Encouragement 💛</h2>
+
+        <textarea id="encText" placeholder="Motivate Dad..."></textarea>
+
+        <button id="saveEnc">Save Encouragement</button>
+
+        <div id="encList"></div>
+    </section>
+
+    <!-- MEDIA UPLOAD -->
+    <section class="media-section">
+        <h2>Upload Photos, Videos & Songs 📸🎵🎥</h2>
+
+        <input type="file" id="mediaUpload" multiple>
+        <button id="uploadBtn">Upload</button>
+
+        <div id="mediaGallery" class="gallery"></div>
+    </section>
+
+    <audio id="sound" src=""></audio>
+
+    <!-- FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getStorage, ref, uploadBytes, listAll, getDownloadURL }
+            from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhLeoFeCqhJHjTXdCGviRFTTw7xn1lGqE",
+            authDomain: "birthday-55.firebaseapp.com",
+            projectId: "birthday-55",
+            storageBucket: "birthday-55.firebasestorage.app",
+            messagingSenderId: "497979772094",
+            appId: "1:497979772094:web:d4e14b812984b951fb62ef",
+            measurementId: "G-0SHSQB8N1R"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        const uploadBtn = document.getElementById("uploadBtn");
+        const input = document.getElementById("mediaUpload");
+        const gallery = document.getElementById("mediaGallery");
+
+        uploadBtn.onclick = async () => {
+            const files = input.files;
+
+            for (let f of files) {
+                const refFile = ref(storage, "media/" + f.name);
+                await uploadBytes(refFile, f);
+            }
+
+            alert("Uploaded ❤");
+            loadGallery();
+        };
+
+        async function loadGallery() {
+            gallery.innerHTML = "";
+
+            const listRef = ref(storage, "media/");
+            const result = await listAll(listRef);
+
+            for (let item of result.items) {
+                const url = await getDownloadURL(item);
+                const name = item.name;
+
+                let content = "";
+
+                if (name.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                    content = `<img src="${url}" class="media-img">`;
+                }
+
+                else if (name.match(/\.(mp4|webm|mov)$/i)) {
+                    content = `<video src="${url}" class="media-video" controls></video>`;
+                }
+
+                else if (name.match(/\.(mp3|wav|ogg)$/i)) {
+                    content = `<audio src="${url}" controls></audio>`;
+                }
+
+                gallery.innerHTML += `<div class="media-item">${content}</div>`;
+            }
+        }
+
+        loadGallery();
+    </script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
